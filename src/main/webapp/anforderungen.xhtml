@@ -1,0 +1,54 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="titel">Anforderungen</ui:define>
+
+    <ui:define name="inhalt">
+        <h:form id="anforderungForm">
+            <p:panel header="Neue Anforderung erfassen">
+                <h:messages globalOnly="true" styleClass="info"/>
+                <h:panelGrid columns="3" columnClasses="label,feld,meldung">
+                    <h:outputLabel value="Titel:" for="titel"/>
+                    <h:inputText id="titel" size="60" label="Titel" required="true"
+                                 value="#{anforderungController.anforderung.titel}">
+                        <f:validateLength minimum="3" maximum="100"/>
+                    </h:inputText>
+                    <h:message for="titel" styleClass="error"/>
+
+                    <h:outputLabel value="Beschreibung:" for="beschreibung"/>
+                    <h:inputTextarea id="beschreibung" cols="60" rows="4" label="Beschreibung"
+                                     value="#{anforderungController.anforderung.beschreibung}">
+                        <f:validateLength maximum="255"/>
+                    </h:inputTextarea>
+                    <h:message for="beschreibung" styleClass="error"/>
+
+                    <h:outputText value=""/>
+                    <p:commandButton value="Anforderung speichern" action="#{anforderungController.speichern()}"
+                                     ajax="false"/>
+                    <h:outputText value=""/>
+                </h:panelGrid>
+            </p:panel>
+        </h:form>
+
+        <p:dataTable value="#{anforderungController.anforderungen}" var="a"
+                     emptyMessage="Noch keine Anforderungen erfasst." styleClass="liste">
+            <f:facet name="header">Erfasste Anforderungen</f:facet>
+            <p:column sortBy="#{a.id}" style="width: 5rem">
+                <f:facet name="header">Nr</f:facet>
+                <h:outputText value="#{a.id}"/>
+            </p:column>
+            <p:column sortBy="#{a.titel}">
+                <f:facet name="header">Titel</f:facet>
+                <h:outputText value="#{a.titel}"/>
+            </p:column>
+            <p:column>
+                <f:facet name="header">Beschreibung</f:facet>
+                <h:outputText value="#{a.beschreibung}"/>
+            </p:column>
+        </p:dataTable>
+    </ui:define>
+</ui:composition>

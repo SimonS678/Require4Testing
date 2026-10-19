@@ -1,0 +1,82 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="titel">Testfälle</ui:define>
+
+    <ui:define name="inhalt">
+        <h:form id="testfallForm">
+            <p:panel header="Neuen Testfall zu einer Anforderung erstellen">
+                <h:messages globalOnly="true" styleClass="info"/>
+                <h:panelGroup rendered="#{empty testfallController.anforderungen}" styleClass="hinweis" layout="block">
+                    Es sind noch keine Anforderungen vorhanden.
+                    <h:link outcome="anforderungen" value="Jetzt eine Anforderung erfassen"/>
+                </h:panelGroup>
+                <h:panelGrid columns="3" columnClasses="label,feld,meldung">
+                    <h:outputLabel value="Anforderung:" for="anforderung"/>
+                    <p:selectOneMenu id="anforderung" label="Anforderung" required="true"
+                                     value="#{testfallController.anforderungId}">
+                        <f:selectItem itemLabel="– bitte wählen –" itemValue="#{null}" noSelectionOption="true"/>
+                        <f:selectItems value="#{testfallController.anforderungen}" var="a"
+                                       itemLabel="#{a.id} – #{a.titel}" itemValue="#{a.id}"/>
+                    </p:selectOneMenu>
+                    <h:message for="anforderung" styleClass="error"/>
+
+                    <h:outputLabel value="Titel:" for="titel"/>
+                    <h:inputText id="titel" size="60" label="Titel" required="true"
+                                 value="#{testfallController.testfall.titel}">
+                        <f:validateLength minimum="3" maximum="100"/>
+                    </h:inputText>
+                    <h:message for="titel" styleClass="error"/>
+
+                    <h:outputLabel value="Beschreibung:" for="beschreibung"/>
+                    <h:inputTextarea id="beschreibung" cols="60" rows="3" label="Beschreibung"
+                                     value="#{testfallController.testfall.beschreibung}">
+                        <f:validateLength maximum="255"/>
+                    </h:inputTextarea>
+                    <h:message for="beschreibung" styleClass="error"/>
+
+                    <h:outputLabel value="Erwartetes Ergebnis:" for="erwartet"/>
+                    <h:inputTextarea id="erwartet" cols="60" rows="3" label="Erwartetes Ergebnis" required="true"
+                                     value="#{testfallController.testfall.erwartetesErgebnis}">
+                        <f:validateLength maximum="255"/>
+                    </h:inputTextarea>
+                    <h:message for="erwartet" styleClass="error"/>
+
+                    <h:outputText value=""/>
+                    <p:commandButton value="Testfall speichern" action="#{testfallController.speichern()}"
+                                     ajax="false"/>
+                    <h:outputText value=""/>
+                </h:panelGrid>
+            </p:panel>
+        </h:form>
+
+        <p:dataTable value="#{testfallController.testfaelle}" var="tf"
+                     emptyMessage="Noch keine Testfälle erstellt." styleClass="liste">
+            <f:facet name="header">Erstellte Testfälle</f:facet>
+            <p:column sortBy="#{tf.id}" style="width: 5rem">
+                <f:facet name="header">Nr</f:facet>
+                <h:outputText value="#{tf.id}"/>
+            </p:column>
+            <p:column sortBy="#{tf.anforderung.titel}">
+                <f:facet name="header">Anforderung</f:facet>
+                <h:outputText value="#{tf.anforderung.titel}"/>
+            </p:column>
+            <p:column sortBy="#{tf.titel}">
+                <f:facet name="header">Titel</f:facet>
+                <h:outputText value="#{tf.titel}"/>
+            </p:column>
+            <p:column>
+                <f:facet name="header">Beschreibung</f:facet>
+                <h:outputText value="#{tf.beschreibung}"/>
+            </p:column>
+            <p:column>
+                <f:facet name="header">Erwartetes Ergebnis</f:facet>
+                <h:outputText value="#{tf.erwartetesErgebnis}"/>
+            </p:column>
+        </p:dataTable>
+    </ui:define>
+</ui:composition>

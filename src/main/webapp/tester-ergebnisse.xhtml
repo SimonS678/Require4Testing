@@ -1,0 +1,60 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="titel">Ergebnisse erfassen</ui:define>
+
+    <ui:define name="inhalt">
+        <h:form id="ergebnisForm">
+            <p:panel header="Tester:in auswählen">
+                <h:panelGrid columns="2" columnClasses="label,feld">
+                    <h:outputLabel value="Ich bin:" for="tester"/>
+                    <p:selectOneMenu id="tester" label="Tester:in" value="#{testerErgebnisseController.testerId}">
+                        <f:selectItem itemLabel="– bitte wählen –" itemValue="#{null}" noSelectionOption="true"/>
+                        <f:selectItems value="#{testerErgebnisseController.tester}" var="te"
+                                       itemLabel="#{te.name}" itemValue="#{te.id}"/>
+                        <!-- AJAX: Auswahl einer Tester:in laedt nur die zugeordneten Testfaelle neu -->
+                        <p:ajax event="change" listener="#{testerErgebnisseController.testerGewechselt()}"
+                                update="durchfuehrungen meldungen"/>
+                    </p:selectOneMenu>
+                </h:panelGrid>
+            </p:panel>
+
+            <h:messages id="meldungen" globalOnly="true" styleClass="info"/>
+
+            <p:dataTable id="durchfuehrungen" value="#{testerErgebnisseController.testdurchfuehrungen}" var="d"
+                         emptyMessage="Keine Testfälle zugeordnet (oder keine Tester:in gewählt)." styleClass="liste">
+                <f:facet name="header">Mir zugeordnete Testfälle</f:facet>
+                <p:column sortBy="#{d.testlauf.bezeichnung}">
+                    <f:facet name="header">Testlauf</f:facet>
+                    <h:outputText value="#{d.testlauf.bezeichnung}"/>
+                </p:column>
+                <p:column sortBy="#{d.testfall.titel}">
+                    <f:facet name="header">Testfall</f:facet>
+                    <h:outputText value="#{d.testfall.titel}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">Beschreibung</f:facet>
+                    <h:outputText value="#{d.testfall.beschreibung}"/>
+                </p:column>
+                <p:column>
+                    <f:facet name="header">Erwartetes Ergebnis</f:facet>
+                    <h:outputText value="#{d.testfall.erwartetesErgebnis}"/>
+                </p:column>
+                <p:column style="width: 12rem">
+                    <f:facet name="header">Ergebnis</f:facet>
+                    <!-- AJAX: geaendertes Ergebnis wird sofort gespeichert -->
+                    <p:selectOneMenu value="#{d.ergebnis}">
+                        <f:selectItems value="#{testerErgebnisseController.ergebnisse}" var="e"
+                                       itemLabel="#{e.bezeichnung}" itemValue="#{e}"/>
+                        <p:ajax event="change" listener="#{testerErgebnisseController.ergebnisSpeichern(d)}"
+                                update=":ergebnisForm:meldungen"/>
+                    </p:selectOneMenu>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>

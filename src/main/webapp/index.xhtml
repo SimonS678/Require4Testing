@@ -1,0 +1,37 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="titel">Startseite</ui:define>
+
+    <ui:define name="inhalt">
+        <p>Require4Testing unterstützt die Organisation manueller Anwendertests – von der Anforderung
+            bis zum Testergebnis. Der Ablauf erfolgt in fünf Schritten:</p>
+
+        <h:panelGrid columns="1" styleClass="kacheln">
+            <p:panel header="1. Anforderungen erfassen">
+                <p>Requirements Engineers legen zu testende Anforderungen an.</p>
+                <h:link outcome="anforderungen" value="Zu den Anforderungen"/>
+            </p:panel>
+            <p:panel header="2. Testläufe anlegen">
+                <p>Testmanager:innen legen Testläufe mit Startdatum an.</p>
+                <h:link outcome="testlaeufe" value="Zu den Testläufen"/>
+            </p:panel>
+            <p:panel header="3. Testfälle zu Anforderungen erstellen">
+                <p>Testfallersteller:innen beschreiben zu jeder Anforderung Testfälle mit erwartetem Ergebnis.</p>
+                <h:link outcome="testfaelle" value="Zu den Testfällen"/>
+            </p:panel>
+            <p:panel header="4. Testfälle und Tester:in einem Testlauf zuordnen">
+                <p>Testmanager:innen ordnen einem Testlauf Testfälle und eine:n Tester:in zu.</p>
+                <h:link outcome="testlauf-detail" value="Zur Zuordnung"/>
+            </p:panel>
+            <p:panel header="5. Ergebnisse erfassen">
+                <p>Tester:innen versehen die ihnen zugeordneten Testfälle mit einem Ergebnis.</p>
+                <h:link outcome="tester-ergebnisse" value="Zur Ergebniserfassung"/>
+            </p:panel>
+        </h:panelGrid>
+    </ui:define>
+</ui:composition>

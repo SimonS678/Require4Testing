@@ -1,0 +1,103 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="metadaten">
+        <f:metadata>
+            <f:viewParam name="testlaufId" value="#{testlaufDetailController.testlaufId}"/>
+            <f:viewAction action="#{testlaufDetailController.testlaufGewechselt()}"/>
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="titel">Testfälle und Tester:in einem Testlauf zuordnen</ui:define>
+
+    <ui:define name="inhalt">
+        <h:form id="zuordnungForm">
+            <p:panel header="Zuordnung">
+                <h:messages globalOnly="true" styleClass="info"/>
+                <h:panelGrid columns="3" columnClasses="label,feld,meldung">
+                    <h:outputLabel value="Testlauf:" for="testlauf"/>
+                    <p:selectOneMenu id="testlauf" label="Testlauf" required="true"
+                                     value="#{testlaufDetailController.testlaufId}">
+                        <f:selectItem itemLabel="– bitte wählen –" itemValue="#{null}" noSelectionOption="true"/>
+                        <f:selectItems value="#{testlaufDetailController.testlaeufe}" var="tl"
+                                       itemLabel="#{tl.bezeichnung}" itemValue="#{tl.id}"/>
+                        <!-- AJAX: Auswahl eines Testlaufs laedt nur die Tabelle der Zuordnungen neu -->
+                        <p:ajax event="change" listener="#{testlaufDetailController.testlaufGewechselt()}"
+                                update="zuordnungen"/>
+                    </p:selectOneMenu>
+                    <h:message for="testlauf" styleClass="error"/>
+
+                    <h:outputLabel value="Testfälle:" for="testfaelle"/>
+                    <p:selectManyCheckbox id="testfaelle" label="Testfälle" required="true" layout="pageDirection"
+                                          value="#{testlaufDetailController.testfallIds}">
+                        <f:converter converterId="javax.faces.Long"/>
+                        <f:selectItems value="#{testlaufDetailController.testfaelle}" var="tf"
+                                       itemLabel="#{tf.titel} (Anforderung: #{tf.anforderung.titel})"
+                                       itemValue="#{tf.id}"/>
+                    </p:selectManyCheckbox>
+                    <h:message for="testfaelle" styleClass="error"/>
+
+                    <h:outputLabel value="Tester:in:" for="tester"/>
+                    <p:selectOneMenu id="tester" label="Tester:in" required="true"
+                                     value="#{testlaufDetailController.testerId}">
+                        <f:selectItem itemLabel="– bitte wählen –" itemValue="#{null}" noSelectionOption="true"/>
+                        <f:selectItems value="#{testlaufDetailController.tester}" var="te"
+                                       itemLabel="#{te.name}" itemValue="#{te.id}"/>
+                    </p:selectOneMenu>
+                    <h:message for="tester" styleClass="error"/>
+
+                    <h:outputText value=""/>
+                    <p:commandButton value="Zuordnen" action="#{testlaufDetailController.zuordnen()}"
+                                     ajax="false"/>
+                    <h:outputText value=""/>
+                </h:panelGrid>
+            </p:panel>
+
+            <p:dataTable id="zuordnungen" value="#{testlaufDetailController.testdurchfuehrungen}" var="d"
+                         emptyMessage="Keine Testfälle zugeordnet (oder kein Testlauf gewählt)." styleClass="liste">
+                <f:facet name="header">Zugeordnete Testfälle des gewählten Testlaufs</f:facet>
+                <p:column sortBy="#{d.testfall.titel}">
+                    <f:facet name="header">Testfall</f:facet>
+                    <h:outputText value="#{d.testfall.titel}"/>
+                </p:column>
+                <p:column sortBy="#{d.testfall.anforderung.titel}">
+                    <f:facet name="header">Anforderung</f:facet>
+                    <h:outputText value="#{d.testfall.anforderung.titel}"/>
+                </p:column>
+                <p:column sortBy="#{d.tester.name}">
+                    <f:facet name="header">Tester:in</f:facet>
+                    <h:outputText value="#{d.tester.name}"/>
+                </p:column>
+                <p:column sortBy="#{d.ergebnis}">
+                    <f:facet name="header">Ergebnis</f:facet>
+                    <h:outputText value="#{d.ergebnis.bezeichnung}" styleClass="ergebnis-#{d.ergebnis}"/>
+                </p:column>
+                <p:column style="width: 10rem">
+                    <f:facet name="header">Aktion</f:facet>
+                    <p:commandButton value="Entfernen" process="@this" update="zuordnungen"
+                                     action="#{testlaufDetailController.entfernen(d)}"
+                                     styleClass="ui-button-secondary"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <h:form id="testerForm">
+            <p:panel header="Neue:n Tester:in anlegen" styleClass="abstand">
+                <h:panelGrid columns="4" columnClasses="label,feld,feld,meldung">
+                    <h:outputLabel value="Name:" for="name"/>
+                    <h:inputText id="name" size="40" label="Name" required="true"
+                                 value="#{testlaufDetailController.neuerTester.name}">
+                        <f:validateLength minimum="2" maximum="100"/>
+                    </h:inputText>
+                    <p:commandButton value="Tester:in anlegen" action="#{testlaufDetailController.testerAnlegen()}"
+                                     update="@form :zuordnungForm"/>
+                    <h:message for="name" styleClass="error"/>
+                </h:panelGrid>
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>

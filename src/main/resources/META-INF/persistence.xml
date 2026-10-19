@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0"
+             xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+                                 http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+    <persistence-unit name="require4testing" transaction-type="RESOURCE_LOCAL">
+        <!-- Hibernate statt des TomEE-Standardproviders OpenJPA -->
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <properties>
+            <!-- Standardwerte fuer lokalen Start; im Docker-Container per DB_URL/DB_USER/DB_PASSWORD ueberschrieben -->
+            <property name="javax.persistence.jdbc.url"
+                      value="jdbc:mysql://localhost:3306/require4testing?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=Europe/Berlin"/>
+            <property name="javax.persistence.jdbc.user" value="r4t"/>
+            <property name="javax.persistence.jdbc.password" value="r4t"/>
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
+            <!-- AUTO-Schluessel als AUTO_INCREMENT-Spalten statt gemeinsamer hibernate_sequence-Tabelle -->
+            <property name="hibernate.id.new_generator_mappings" value="false"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <!-- TomEE soll die Persistence Unit nicht selbst beim Deployment initialisieren -->
+            <property name="tomee.jpa.factory.lazy" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>

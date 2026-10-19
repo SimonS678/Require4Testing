@@ -1,0 +1,38 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: r4t-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: require4testing
+      MYSQL_USER: r4t
+      MYSQL_PASSWORD: r4t
+      TZ: Europe/Berlin
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - r4t-db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+  app:
+    build: .
+    container_name: r4t-app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_URL: "jdbc:mysql://mysql:3306/require4testing?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Europe/Berlin"
+      DB_USER: r4t
+      DB_PASSWORD: r4t
+      TZ: Europe/Berlin
+    ports:
+      - "127.0.0.1:8080:8080"
+
+volumes:
+  r4t-db:
